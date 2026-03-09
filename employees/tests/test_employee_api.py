@@ -92,3 +92,21 @@ def test_update_employee():
     assert response.status_code == 200
     assert response.data["job_title"] == "Senior Software Engineer"
     assert response.data["salary"] == "120000.00"
+
+
+@pytest.mark.django_db
+def test_delete_employee():
+    employee = Employee.objects.create(
+        full_name="John Doe",
+        job_title="Software Engineer",
+        country="India",
+        salary=100000,
+    )
+
+    client = APIClient()
+    url = reverse("employee-detail", args=[employee.id])
+
+    response = client.delete(url)
+
+    assert response.status_code == 204
+    assert Employee.objects.filter(id=employee.id).count() == 0
