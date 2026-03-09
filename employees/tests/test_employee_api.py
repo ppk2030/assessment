@@ -1,5 +1,6 @@
 import pytest
 from rest_framework.test import APIClient
+from django.urls import reverse
 
 from employees.models import Employee
 
@@ -15,7 +16,8 @@ def test_create_employee():
         "salary": 100000,
     }
 
-    response = client.post("/employees/", data, format="json")
+    url = reverse("employee-list")
+    response = client.post(url, data, format="json")
 
     assert response.status_code == 201
     assert response.data["full_name"] == "John Doe"
@@ -37,7 +39,9 @@ def test_list_employees():
     )
 
     client = APIClient()
-    response = client.get("/employees/")
+
+    url = reverse("employee-list")
+    response = client.get(url)
 
     assert response.status_code == 200
     assert len(response.data) == 2
