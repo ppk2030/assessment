@@ -110,3 +110,24 @@ def test_delete_employee():
 
     assert response.status_code == 204
     assert Employee.objects.filter(id=employee.id).count() == 0
+
+
+@pytest.mark.django_db
+def test_salary_calculation_india():
+    employee = Employee.objects.create(
+        full_name="John Doe",
+        job_title="Software Engineer",
+        country="India",
+        salary=100000,
+    )
+
+    client = APIClient()
+
+    url = reverse("employee-salary", args=[employee.id])
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert response.data["gross_salary"] == 100000
+    assert response.data["deduction"] == 10000
+    assert response.data["net_salary"] == 90000
