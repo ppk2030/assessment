@@ -45,3 +45,50 @@ def test_list_employees():
 
     assert response.status_code == 200
     assert len(response.data) == 2
+
+
+@pytest.mark.django_db
+def test_retrieve_employee():
+    employee = Employee.objects.create(
+        full_name="John Doe",
+        job_title="Software Engineer",
+        country="India",
+        salary=100000,
+    )
+
+    client = APIClient()
+    url = reverse("employee-detail", args=[employee.id])
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert response.data["id"] == employee.id
+    assert response.data["full_name"] == "John Doe"
+    assert response.data["job_title"] == "Software Engineer"
+    assert response.data["country"] == "India"
+
+
+@pytest.mark.django_db
+def test_update_employee():
+    employee = Employee.objects.create(
+        full_name="John Doe",
+        job_title="Software Engineer",
+        country="India",
+        salary=100000,
+    )
+
+    client = APIClient()
+
+    url = reverse("employee-detail", args=[employee.id])
+
+    updated_data = {
+        "full_name": "John Doe",
+        "job_title": "Senior Software Engineer",
+        "country": "India",
+        "salary": 120000,
+    }
+
+    response = client.put(url, updated_data, format="json")
+
+    assert response.status_code == 200
+    assert response.data["job_title"] == "Senior Software Engineer"
+    assert response.data["salary"] == "120000.00"
