@@ -202,3 +202,34 @@ def test_salary_metrics_by_country():
     assert response.data["min_salary"] == "100000.00"
     assert response.data["max_salary"] == "120000.00"
     assert response.data["avg_salary"] == "110000.00"
+
+
+@pytest.mark.django_db
+def test_salary_metrics_by_job_title():
+    Employee.objects.create(
+        full_name="John Doe",
+        job_title="Software Engineer",
+        country="India",
+        salary=100000,
+    )
+
+    Employee.objects.create(
+        full_name="Jane Smith",
+        job_title="Software Engineer",
+        country="United States",
+        salary=120000,
+    )
+
+    Employee.objects.create(
+        full_name="Alex Doe",
+        job_title="Designer",
+        country="Germany",
+        salary=90000,
+    )
+
+    client = APIClient()
+    response = client.get("/salary-metrics/job-title/Software Engineer/")
+
+    assert response.status_code == 200
+    assert response.data["job_title"] == "Software Engineer"
+    assert response.data["avg_salary"] == "110000.00"
