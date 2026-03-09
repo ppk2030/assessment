@@ -63,3 +63,19 @@ class SalaryMetricsByCountryView(APIView):
                 "avg_salary": f"{metrics['avg_salary']:.2f}",
             }
         )
+    
+
+class SalaryMetricsByJobTitleView(APIView):
+    def get(self, _request, job_title):
+        employees = Employee.objects.filter(job_title=job_title)
+
+        metrics = employees.aggregate(
+            avg_salary=Avg("salary"),
+        )
+
+        return Response(
+            {
+                "job_title": job_title,
+                "avg_salary": f"{metrics['avg_salary']:.2f}",
+            }
+        )
