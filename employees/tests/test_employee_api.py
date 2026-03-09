@@ -1,6 +1,6 @@
 import pytest
-from rest_framework.test import APIClient
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 from employees.models import Employee
 

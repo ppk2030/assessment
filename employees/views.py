@@ -1,18 +1,13 @@
-
-from rest_framework import status, viewsets
-from .models import Employee
-from .serializers import EmployeeSerializer
 from decimal import Decimal
+
+from django.db.models import Avg, Max, Min
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Employee
-from .serializers import EmployeeSerializer
-from django.db.models import Avg, Max, Min
 from rest_framework.views import APIView
 
-class EmployeeViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+from .models import Employee
+from .serializers import EmployeeSerializer
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
@@ -63,7 +58,7 @@ class SalaryMetricsByCountryView(APIView):
                 "avg_salary": f"{metrics['avg_salary']:.2f}",
             }
         )
-    
+
 
 class SalaryMetricsByJobTitleView(APIView):
     def get(self, _request, job_title):
