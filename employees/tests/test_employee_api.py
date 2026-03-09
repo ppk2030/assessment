@@ -151,3 +151,23 @@ def test_salary_calculation_united_states():
     assert response.data["gross_salary"] == 100000
     assert response.data["deduction"] == 12000
     assert response.data["net_salary"] == 88000
+
+
+@pytest.mark.django_db
+def test_salary_calculation_other_country():
+    employee = Employee.objects.create(
+        full_name="Alex Doe",
+        job_title="Designer",
+        country="Germany",
+        salary=100000,
+    )
+
+    client = APIClient()
+    url = reverse("employee-salary", args=[employee.id])
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert response.data["gross_salary"] == 100000
+    assert response.data["deduction"] == 0
+    assert response.data["net_salary"] == 100000
