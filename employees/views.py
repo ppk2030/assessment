@@ -7,7 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Employee
 from .serializers import EmployeeSerializer
-
+from django.db.models import Avg, Max, Min
+from rest_framework.views import APIView
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
@@ -41,4 +42,24 @@ class EmployeeViewSet(viewsets.ModelViewSet):
                 "net_salary": float(net_salary),
             },
             status=status.HTTP_200_OK,
+        )
+
+
+class SalaryMetricsByCountryView(APIView):
+    def get(self, request, country):
+        employees = Employee.objects.filter(country=country)
+
+        metrics = employees.aggregate(
+            min_salary=Min("salary"),
+            max_salary=Max("salary"),
+            avg_salary=Avg("salary"),
+        )
+
+        return Response(
+            {
+                "country": country,
+                "min_salary": f"{metrics['min_salary']:.2f}",
+                "max_salary": f"{metrics['max_salary']:.2f}",
+                "avg_salary": f"{metrics['avg_salary']:.2f}",
+            }
         )
